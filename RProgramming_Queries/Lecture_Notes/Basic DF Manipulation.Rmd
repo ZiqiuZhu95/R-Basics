@@ -1,0 +1,56 @@
+---
+title: "R Cheatbook (Getting and Cleaning Data)"
+output: rmarkdown::github_document
+---
+
+This is an R notebook for me to reference to when I decide to clean or sort data. However, 
+after learning the DPLYR package, I'm not so confident I will use most of this.
+
+## Subsetting and Sorting
+
+data.frame() column variables must be the same atomic class
+```{r}
+df <- data.frame("var1" = c(2,1,3), "var20" = c('b', 'a', 'c'))
+df
+```
+
+To subset, we use the square brakets [] after a dataframe e.g. df[row, column]. Square brackets can take index values as well as logical values including ands and ors. 
+```{r}
+df[df$var1 > 2,]
+```
+However, if we're dealing with NA values, then we'd want to use the which function which returns positions and indices.
+```{r}
+df[which(df$var1 > 2),]
+```
+We can also order rows using the order funcion.
+
+```{r}
+df[order(df$var1),]
+```
+
+## Summarizing Data
+
+Summary Sample output
+
+```{r}
+library(datasets)
+data(iris)
+summary(iris)
+```
+c
+Summary is pretty good for informing about NA values.
+
+##Cross Tabs
+
+```{r}
+data(UCBAdmissions)
+df <- as.data.frame(UCBAdmissions)
+head(df, 5) 
+xt <- xtabs(Freq ~ Gender + Admit, data=df)
+xt
+```
+## New Variables
+df$newvar <- c(...)
+df$newvar <- ifelse(x < y, TRUE, FALSE)
+
+

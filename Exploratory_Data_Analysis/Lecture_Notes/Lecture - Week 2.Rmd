@@ -1,0 +1,138 @@
+---
+title: "Lecture - Week 2"
+author: "Ziq"
+date: "March 22, 2019"
+output: rmarkdown::github_document
+---
+
+## Lattice Plotting System
+
+One function call. No annotations unlike the base.
+
+**Functions**
+- xyplot: scatterplots
+- bwplot: box and wisker plots
+- histogram: histograms
+- stripplot: box ploot with points
+- dotplot: dots on "violin strings"
+- splom: scatterplot matrix
+- levelplot, contour plot: plots image data
+
+```{r}
+#xyplot(y ~ x | f * g, data)
+``` 
+
+So on the left is the y variable, right variable. After that, you see the conditioning variables (optional) as well as teh dataframe. If no data frame or list is passed then the parent frame is used (?).
+
+## ggplot2
+
+### qplot()
+works like the plot function, looks for data in a dataframe (no specification means that it'll look for it), and plots are made up of aesthetics (size, shape, color) and geoms (points, lines)
+Factors are important (should be labeled)
+qplot hides al ot of what happens underneath and ggplot does a lot of the work.
+
+It's an implementation of the Grammar of Graphics by Leland Wikinson.
+
+### Basic components of a ggpot2 plot
+
+- a Data Frame
+- Aesthetic mappings: how data are mapped to color, size
+- geoms, geometric objcts ike points, lines, shapes
+- faets: for conditional plots
+- stats: statistical transformation like binning, quantiles, smoothing
+- scales: what scale an esthetic map uses(male = red, female = blue)
+- coordinate system
+
+# Example dataset
+
+```{r}
+library(ggplot2)
+library(datasets)
+str(mpg)
+qplot(displ, hwy, data = mpg)
+qplot(displ, hwy, data = mpg, color = drv) #auto legend is created
+qplot(displ, hwy, data=mpg, geom = c("point", "smooth")) #adds a smooth line for trends
+qplot(hwy, data = mpg, fill = drv) #makes a histogram with one argument, fills by factor colors
+qplot(displ, hwy, data = mpg, facets =.~drv) #facets are like panels. So here we can split it into different plotss
+#the dot beside drv means that the it's one row and the columns are specified by drv
+# the dot to the right of drv specifies one column and the rows are specified by drv
+qplot(hwy, data = mpg, facets = drv~.)
+```
+
+## More Examples
+```{r}
+qplot(drv, hwy, data = mpg, geom = "boxplot", color = manufacturer) #boxplot
+qplot(hwy, data = mpg, fill = drv) #histogram
+```
+
+```{r}
+g <- ggplot(mpg, aes(displ, hwy))
+g + geom_point()
+g+geom_point()+geom_smooth(method = "lm")
+g+geom_point()+geom_smooth(method = "lm") + facet_grid(.~drv) + ggtitle("Swirl Rules!")
+#aesthetics
+g + geom_point(color = "pink", size = 4, alpha = 1/2)
+g + geom_point(size = 4, alpha = 1/2, aes(color = drv))
+g + geom_point(aes(color = drv)) + labs(title = "Swirl Rules!") + labs(x = "Displacement", y = "Hwy Mileage")
+g + geom_point(aes(color = drv), size = 2, alpha = 1/2) + geom_smooth(size = 4, linetype = 3, method = "lm", se = FALSE)
+#se are the gray shadow
+```
+
+
+So qpot() is analog to plot() with many built-in features, and produces publication-ready graphics
+
+So a lot of the times you'd want to add a smooth layer to understand what the general trend is. So there's a smoother built in called geom_smooth(), but you can also make it geom_smooth(method="lm") for a linear regression model.
+
+So adding layers, we start with g<- ggplot(dataframe, aes(x, y))
+then we can add to it like g + geom_point() + geom_smooth(method = "lm") + facet_grid(. ~ factor variable)
+Note that order doesn't matter
+
+## Annotations
+
+labes: xlab, ylab, labs, ggtitle()
+There are global things too, which is theme(legend.position="")
+Standard appearances themes include
+- (theme_gray()
+- theme_bw()
+
+## Modifying Aesthetics
+geom_point(color = "steelblue", size = 4, alpha = 1/2) This is a constant color value. Or:
+geom_point(aes(color = bmicat), size = 4, alpha = 1/2) This is assigning color to a variable which requires calling aes.
+labs(title = 'title') + labs(x = expression("log " * PM[2.5]), y = "Nocturnal Smymptoms")
+geom_line() makes a line plot instead of geom_point plots
+
+For outliers,naturally ggplot includes everything. Using ylim will subset data that is within the range. So in order to include everything you'd use coord_cartesian(yim=c(range))
+
+```{r}
+g <- ggplot(mpg, aes(x = displ, y = hwy, color = factor(year)))
+g + geom_point() + facet_grid(drv~cyl, margins = TRUE)
+```
+
+
+## Marking Continuous Variables Categorical
+
+First use cutpoints <- quantile(data$var, seq(0, 1, lenghth = quartiles - 1), na.rm = TRUE)
+Then use cut(data$var, cutpoints) to create new factor variables
+
+## Colors
+
+colors() has about 600+ colors, but colorRamp and colorRampPalette gives you blending options to blend colors together
+
+We use alpha = 0.3 which represents the opacity to get a better picture of where the points are more dense towards.
+
+## More examples!
+with the diamond dataset
+
+```{r}
+#histogram
+qplot(price, data=diamonds, binwidth = 18497/30, fill = cut) #binwidth should be range/30
+qplot(price, data = diamonds, geom = "density") # density function
+qplot(price, data = diamonds, geom = "density", color = cut)
+#qplot(carat, price, data = diamonds, shape = cut)
+#qplot(carat,price,data=diamonds, color=cut) + geom_smooth(method="lm")
+#plot(carat,price,data=diamonds, color=cut, facets = .~cut) + geom_smooth(method="lm")
+#cutpoints <- quantile(diamonds$carat,seq(0,1,length=4),na.rm=TRUE)
+#diamonds$car2 <- cut(diamonds$carat,cutpoints)
+#g <- ggplot(data = diamonds, aes(depth, price))
+```
+

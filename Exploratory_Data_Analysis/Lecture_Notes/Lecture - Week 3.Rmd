@@ -1,0 +1,170 @@
+---
+title: "Lecture - Week 3"
+author: "Ziq"
+date: "March 23, 2019"
+output: rmarkdown::github_document
+---
+
+## Clustering methods - Hierachical Clustering
+So first how do we drine close? How do we group things? How do we visualize and interpret the groupings?
+
+**Agglomeraive approach:** find the two closest things, group them (which sorta becomes a new point replacing the old data), then find the next closest.
+This requires a defined distance, a merging approach, then it produces a tree showing how close things are to each other.
+
+So we need a good way to define close that makes sense to our data.
+Continuous - Euclidean distance.
+Continuous - correlation similarity
+Binary - manhattan distance
+
+to calculate it between two points \(X_1, Y_1, Z_1 \) and \(X_2, Y_2, Z_2\) the distance is 
+
+$$\sqrt{(X_1 - X_2)^2 + (Y_1 - Y_2)^2 + (Z_1 - Z_2)^2}$$
+
+Manhattan distance assumes a grid where you can only move one point 1 along the city blocks. Then from th two points it is
+
+$$|X_1 - X_2| + |Y_1 - Y_2| + |Z_1 - Z_2|$$
+
+## Example
+```{r}
+set.seed(1234)
+par(mar = c(4,4,2,2))
+x <- rnorm(12, mean = rep(1:3, each = 4), sd=0.2)
+y <- rnorm(12, mean = rep(c(1,2,1), each = 4), sd = 0.2)
+plot(x, y, col="blue", pch = 19, cex = 2)
+text(x + 0.05, y + 0.05, labels = as.character(1:12))
+dataFrame <- data.frame(x = x, y = y)
+dist(dataFrame)
+distxy <- dist(dataFrame) #distance between all the different rows in the data frame. Default euclidean.
+#So points 5 and points 6 are the closest together. We're going to then group and replace them with a new point.
+#The next two points are 10 and 11 which will become a new point as well. We keep going until a dendrogram.
+hClustering <- hclust(distxy)
+plot(hClustering)
+#The farther down the tree, they got clustered first. The later ones got clustered later. If you draw a horizontal line at
+# the level 2.0, there are 2 branches. At 1.0, there's 3 branches.
+#should also look at heat aps
+```
+
+## Merging points
+
+So we can do average linking. Complete linkage is to take two farthest points and that distance is the distance between clusters. Average linking will give a very different result from the other.
+
+#Heatmap
+
+Runs a hiearchical clustering analysis on rows sand columns of the table.
+```{r}
+dataMatrix <- as.matrix(dataFrame)[sample(1:12),]
+heatmap(dataMatrix)
+```
+
+So here we see along the rows, that there are probably 3 clusters row-wise? Sometimes the pictures may be unstable if you have otliers, or different values, etc.
+
+## K-Means Clustering
+
+Partition to a fix number of clusters (you need a sense for it). It is such that hte sum of squares from points to assigned cluster centers are minimized.
+Then we guess initial centroids, and assign things to the closest centroids. Afterwards we recalculate the centroids to get a final estimate. Then finally assign each point to clusters.
+
+## Procedure
+
+Lets say we have 12 points x,y
+pick 3 random points for clusters, cx, cy
+We assign points to clusters that fits them the best
+```{r}
+newClust <- apply(distTmp, 2, which.min)
+cols1 <- c("red", "orange", "purple")
+points(x,y,pch=19,cex=2,col=cols1[newClust])
+# now we recalculate centroids so they are the average (center of gravity) of cluster of points assigned. Do x and y separately. tapply assigns a factor and the function is applied to subsets of the array.
+newCx <- tapply(x, newClust, mean)
+newCy <- tapply(y, newClust, mean)
+points(newCx,newCy,col=cols1,pch=8,cex=2,lwd=2)
+newClust2 <- apply(distTmp2,2,which.min)
+points(x,y,pch=19,cex=2,col=cols1[newClust2])
+finalCx <- tapply(x, newClust2, mean)
+finalCy <- tapply(y, newClust2, mean)
+points(finalCx,finalCy,col=cols1,pch=9,cex=2,lwd=2) #so R has a function that does all of this given a dataFrame
+
+kmeans(dataFrame, centers = 3)
+```
+
+```{r}
+kmeansObj <- kmeans(dataFrame, centers = 3)
+names(kmeansObj)
+kmeansObj$cluster
+par(mar = rep(0.2,4))
+plot(x,y, col = kmeansObj$cluster, pch = 10, cex = 2)
+points(kmeansObj$centers, col = 1:3, pch = 3, cex = 3, lwd =3 )
+
+#for 6 clusters
+plot(x,y,col=kmeans(dataFrame,6)$cluster,pch=19,cex=2) #doing this a few times makes it change clusters
+#So important to know that you won't always get the same clusters because of your initialized points.
+```
+
+
+
+
+
+## Dimension reduction and Singular Value Decomposition
+
+```{r}
+set.seed(12345)
+par(mar = rep(0.2,4))
+dataMatrix <- matrix(rnorm(400), nrow = 40)
+image(1:10, 1:40, t(dataMatrix)[, nrow(dataMatrix):1])
+
+#add a pattern
+set.seed(678910)
+for (i in 1:40) {
+  coinFlip <- rbinom(1, size = 1, prob =0.5)
+  if (coinFlip) {
+    dataMatrix[i, ] <- dataMatrix[i,] + rep(c(0,3), each = 5)
+  }
+}
+
+image(1:10, 1:40, t(dataMatrix)[, nrow(dataMatrix):1])
+heatmap(dataMatrix) # clearly 5 clusters on the left, 5 clusters on the right
+```
+
+So let's say you have a lot of variables. You want new variables that are uncorrelated and explains as much variance as possible. Variables that are more independent and more relevant so they explain as much of the original data as possible.
+
+So if you put all the variables together in one matrix, you then want to find he best matrix with fewer variables that explains the original data. First goal is statistical and the second goal is data compression.
+
+So we can't run SVD on NA values. We can however use the library(impute) which will impute it by the k-nearest neighbors in that row. So if k is 5 then it will impute that value with the average of the nearest 5. 
+
+In SVD, you are retruned with UDV where U is the left singular vectors, D is the, V is the right singular vector. The U matrix is associated with the ROW means of clustered data, and the V matrix is associated with the COLUMN means of the clustred data. The D matrix is a diagonal matrix that explains the variation, given in decreasing order from highest to lowset.
+
+Note that PCA of a scaled matrix yields the right singular vectors of a similar scaled matrix. So the principal components are the columns of V. Singular values are in the diagonal elements of D
+
+```{r}
+load('face.rda')
+
+svd1 <- svd(scale(faceData)) #Scale normalizes column data. So it subtracts column mean and divide result by col's SD
+plot(svd1$d^2/sum(svd1$d^2), pch = 19, xlab = "Singular vector", ylab = "Variance explained")
+
+approx1 <- svd1$u[,1] %*% t(svd1$v[,1]) * svd1$d[1]
+approx5 <- svd1$u[, 1:5] %*% diag(svd1$d[1:5]) %*% t(svd1$v[,1:5])
+approx10 <- svd1$u[,1:10] %*% diag(svd1$d[1:10]) %*% t(svd1$v[,1:10])
+
+par(mfrow = c(1,4))
+image(t(approx1)[, nrow(approx1):1], main = "(a)")
+image(t(approx5)[, nrow(approx5):1], main = "(b)")
+image(t(approx10)[, nrow(approx10):1], main = "(c)")
+image(t(faceData)[, nrow(faceData):1], main = "(d)")
+```
+
+Notes: scale matters (variables need to be on the same scale), PCs and SVs may mix real patterns, and this can be computationally intensive.
+
+## Plotting and Color in R
+
+So basically the default color schemes in R are pretty bad. So we want to help with this.
+
+## Clustering Example
+
+So first we look at the data.
+We want to llook at some patterns so they took subject 1, and looked at its data. 
+Looked at the acceleration of subject 1 and compared it to other activities
+
+```{r}
+mdist <- dist(sub1[,10:12]) #acceleration is in columns 10:12
+hclustering <- hclust(mdist)
+myplclust(hclusting, lab.col = unclass(sub1$activity)) #think myplclustering is their own function.
+```
+

@@ -1,0 +1,49 @@
+---
+title: "Tidyr Basics"
+output: rmarkdown::github_document
+---
+
+Remember that for dataframes, each row is an observation and each column is a variable (not value).
+Examples are taken from the swirl package.
+
+#Gather
+
+Gather takes multiple columns and collapses into key-value pairs, duplicating all other columns as needed. You use gather() when you notice that you have columns that are not variables.
+
+```{r}
+students
+gather(students, sex, count, male:female, -grade)
+```
+
+# Separate
+separate() turns a single character column into multiple columns.  specify the first three arguments: data = res, col = sex_class, into = c("sex", "class"). separate() was able to figure out on its own how to separate the sex_class column. Unless you request otherwise with the 'sep' argument, it splits on non-alphanumeric values. In other words, it assumes that the values are separated by something other than a letter or number (in this case, an underscore.)
+
+```{r}
+students2
+t1 <- gather(students2, sex_class, count, -grade)
+t1
+separate(t1, sex_class, c("sex", "class"))
+```
+
+More examples!
+# Spread
+Spread a key-value pair across multiple columns
+
+```{r}
+students3
+s3.1 <- gather(students3, class, grade, class1:class5, na.rm = TRUE)
+s3.1
+s3.2 <- spread(s3.1, test, grade)
+s3.2
+mutate(s3.2, class = parse_number(class))
+```
+
+# mergedatasets
+```{r}
+psd <- mutate(passed, status = "passed")
+fld <- mutate(failed, status = "failed")
+psd
+fld
+bind_rows(psd,fld)
+```
+

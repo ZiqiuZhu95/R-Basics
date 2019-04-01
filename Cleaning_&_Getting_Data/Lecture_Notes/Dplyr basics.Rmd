@@ -1,0 +1,61 @@
+---
+title: "DPLYR"
+output: rmarkdown::github_document
+---
+
+All DPLYR functions require that that you enter a data frame as its first argument, and will always return a data frame
+
+Key Verbs:
+Select: return a subset of the columns of the data
+Filter: extracts a subset of rows from a data frame based on logical conditions
+Arrange: reorder rows of a data frame
+Rename: rename variables in a data frame
+Mutate: add new variables/columns or transform existing variables
+Summarise: generate summary statistics of different variable in data frame
+
+```{r}
+library(dplyr)
+library(datasets)
+data(iris)
+str(iris)
+```
+
+#Subsetting
+A lot easier because we don't need to find the indices that are required for R's basic functions.
+```{r}
+head(select(iris, Sepal.Length:Sepal.Width)) #or
+head(select(iris, -(Sepal.Length:Sepal.Width)))
+```
+Filter works really similarly and really intuitively from the description.
+
+```{r}
+head(filter(iris, Sepal.Width > 3 & Sepal.Length > 5))
+```
+
+# Arrange
+
+```{r}
+head(arrange(iris, desc(Petal.Width)))
+```
+
+# Rename
+
+```{r}
+rename(iris, Sep.Length = Sepal.Length) #new name = old name
+```
+
+# Mutate
+
+```{r}
+head(mutate(iris, Normalized.SP = Sepal.Length - mean(Sepal.Length, na.rm = TRUE)))
+iris <- mutate(iris, newfactor = factor(Sepal.Length > 5, labels = c("short", "long")))
+lenf <- group_by(iris, newfactor)
+```
+
+#summarize
+A powerful way to call a function to a dataframe that is already grouped.
+
+```{r}
+head(summarize(lenf, Sepal.Length = mean(Sepal.Length)))
+```
+
