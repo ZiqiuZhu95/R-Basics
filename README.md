@@ -13,4 +13,6 @@ For those that are interested in looking at the projects that I've completed, I'
 
 **Exploratory Data Analysis**: Principles of Analtic Graphics, Exploratory graphs, Base Plotting System, Graphics Devices, Lattice Plotting System, **ggplot2** package, Hierarchical Clustering, K-Means Clustering, and Dimension Reduction (PCA and SVD)
 
-**Reproducible Research**: Concept of reproducibility, Data Analysis Structures, Markdown, RMarkdown, **knitr** package, and best practices
+**Reproducible Research**: Concept of reproducibility, Data Analysis Structures, Markdown, RMarkdown, **knitr** package, and best practices.
+
+*The second project of this course offered a great opportunity to practice many of the skills that I've learned prior to Reproducible Research in a presentable manner.*
