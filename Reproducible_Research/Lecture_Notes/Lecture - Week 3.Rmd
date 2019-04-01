@@ -1,0 +1,63 @@
+---
+title: "Lecture - Week 3"
+author: "Ziq"
+date: "March 29, 2019"
+output: html_document
+---
+
+## Research Paper
+
+- Title / Author List
+- Abstract
+- Body / Results
+- Supplementary Materials / gory details
+- Code / Data / really gory details
+
+## Email presentation:
+
+Subject line / Sender info.
+Summarize findings in one sentence.
+
+Body: Description of problem / context; recall what was proposed and executed;
+summarize findings / results; 1-2 paragraphs.
+
+If action needs to be taken as a result of the presentation, suggest some
+options and make them concrete. If questions need to baddressed try to make
+them yes/no
+
+Attach maybe R Markdown files, don't spit out pages of code. Link to 
+supplmentary materials like code, or GitHub repositories.
+
+## Checklist
+
+Do something that you're interested in with a focused question. Work with good
+collaborators and do something that's interesting to you.
+
+DO NOT do things on hand like removing outliers in Excel or do formatting or
+other type of things. Try not to edit tables and figues as much. It hits
+reproducibility.
+
+Downloading Data from a website should have clear instructions.
+
+Moving data around the computer like splitting/reformatting data files.
+
+Don't use graphical user interfaces. It's convenient and inuitive, and 
+interactive, but the ease of use comes at a price of reproducibility, especially
+if it doesn't log the things you do. Text editors are fine though.
+
+Try to teach a computer to do what you need to do? For example, try to download 
+the file through R via code instead of doing it manually.
+
+Use version control like git. Also be aware of your computing environmnet like
+OS, CPU, GPU, libraries, and version control etc.
+
+```{r}
+sessionInfo()
+```
+
+Try not to save data analysis outputs just because it's hard to be reproducible.
+
+Maybe set a seed. Try to think of a pipeline as well to make everything reproducible.
+
+
+

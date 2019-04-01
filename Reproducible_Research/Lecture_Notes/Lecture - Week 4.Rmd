@@ -1,0 +1,36 @@
+---
+title: "Lecture - Week 4"
+author: "Ziq"
+date: "March 29, 2019"
+output: html_document
+---
+
+## Caching Computations
+
+So you have a code chunk that can be cached into computations which can then be 
+stored for when you make a presentation. So there's a cacher package that can
+read your code and store the results in a key-value database. It's like git. 
+This is a package that can be distributed to other people that can clone and
+evaluate it etc.
+
+## Case studies
+
+Gotta becareful with high leverage points with one or two outliers.
+Reproducible data allows for secondary analysis for a critique of
+analysis and additional new analysis. It allows for scientific discussion
+to occur in a timely and informed manner.
+
+So in biostats a lot of people are confident about genomes. But our intuition
+gets worse and worse when it comes to high dimensional data. We need a lot of
+reproducibility so that we can see how people got from data to analysis. 
+
+So there was a good case on which drugs would be most useful against a single
+patient. They picked the genes that will be part of their sensitivity 
+signature, and tried 7 commonly used agents. All the data was public and
+they performed a few successful trials, and people got excited to try it too.
+They had a model which worked well with the training set, but the test set
+didn't separate so well. So they tried to reproduce what the original paper
+was done.
+
+Basically there was confounding in the experimental design, mixing up of sample
+labels, gene labels, group labels.

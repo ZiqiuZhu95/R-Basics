@@ -1,0 +1,92 @@
+---
+title: "Lecture - Week 2"
+author: "Ziq"
+date: "March 29, 2019"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+## Coding Standards
+
+Column margins at 80, tab length at least 4, use an IDE and make your functions 
+short.
+
+## Markdown
+
+It's a text-to-HTML conversion tool for web writers. 
+
+#### Syntax
+
+*italicize*
+**bold**
+
+- first item in list
+- second item in list
+- third item in list
+
+[link to google](google.ca)
+
+[link to google] [1] and [link to hotmail] [2]
+
+A spacing is needed before the quotes.
+
+[1]: https://www.google.ca/ "google"
+[2]: https://www.hotmail.com/ "hotmail"
+
+Double space after a sentence will make a new line  
+assfas
+
+### What is Markdown
+
+## Knitr
+
+So authors had taken considerable effort to put data/results onto the web. Knitr
+sort of solves this problem by providing this basic idea where an article is a 
+stream of text and code.
+
+It's for a person to focus on writing as opposed to formatting. It'd be also
+be really useful to do this from the start. The cons ot literate programing is 
+the text and code are in one place so it's a lengthy analysis.
+
+### What is knitr?
+
+Already built into R studio which is nice. Markdown is a simplified version
+of markup languages. It's good for manuals, short or medium technical 
+documents, tutorials, repors and data preprocessing documents/summaries.
+
+Not great for long research articles, time consuming computations, or
+documents that require precies formatting.
+
+```{r}
+1 + 1
+```
+
+If you just want the output then
+```{r, echo=FALSE}
+1 + 1
+```
+
+if you just want the code then
+
+```{r, results='hide'}
+1 + 1
+```
+
+```{r ,echo = FALSE}
+time <- format(Sys.time(), "%a %b %d %X %Y")
+string <- "cheese"
+```
+
+The current time is `r time`. I like `r string`
+
+```{r}
+opts_chunk$set(echo = false, results = "hide")
+```
+
+One chunk can somtimes take al ong time to run and chunks have to be recomputed
+everytime you re-knit a file. Setting cache=TRUE can be set to store results of
+computation.
+
+

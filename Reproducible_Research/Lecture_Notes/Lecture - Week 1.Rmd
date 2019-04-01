@@ -1,0 +1,115 @@
+---
+title: "Lecture - Week 1"
+author: "Ziq"
+date: "March 27, 2019"
+output: html_document
+---
+
+## What is Reproducible Research About?
+
+Basically there should be some sort of communication on how the data analysis performed. Basically if a finding is more robust and has replication then it is more evidential that it is true. There's nothing wrong with replication, but it's hard to replicate studies because maybe there's no time, no money, or ot it's uniuqe.
+
+**Reproducible Research** Make analytic data and code available so that others can reproduce it. 
+
+## Research Pipline:
+
+Measured Data >-> Analytic Data > Computational Results > Presentation in figures, table, numerical summaries to get to the article text.
+
+The IOM Report:
+Data/metadata used to develop tests should be made publicly available
+computer code and computational procedures should be sustainably availableL
+"Ideally the computer code that is released will emcompass all the steps of computational analysis including all the data preprocessing steps that haveb een described in this chapter."
+
+So we need analytic data, analytical code, docmentation of code and data, and standard meanas of distribution.
+
+Some of the challenges are that readers don't have the same amount of resources such as computing output.
+
+## Literate (Statistical) Programming
+
+Article is a stream of **text** and **code** where text is readable to humans and code is readable to computers. This programming is weave to produce pdfs and presentational documnets.
+
+So you'd need documentation language and a pogramming language. For this we have Sweave which uses Latex, and then we have R programming.
+
+The knitr programming is a type of literate statistical programming that uses R as the programming language and allows other types of languages if you want. It also uses latex.
+
+Reproducible research is really importat for st udies that are difficult to replicate. 
+
+## Script everything
+
+This means to write everything down. This is all the exploratory analysis, the data analysis, the stuff you did as supporting players to get your final presentation. In music, this is the score. Part of this script is in like R script. Other apps can be found elsewhere.
+
+## Steps in a data analysis:
+
+A key challenge is to sort of filter the data to get to the stuff you need. So we start with a question, and this is the best dimension reduction tool that you'll ever use.
+
+Know that when you load data from a internet source, record URL AND Time accessed. In the cleaning, understand how it's pre processed like if it was from a census, sample, etc.
+
+```{r}
+library(kernlab)
+data(spam)
+str(spam[,1:5]) #Can i take quantitative characteristics of data to qualify as spam or not?
+```
+
+## Let's do subsampling
+
+```{r}
+set.seed(3435)
+trainIndicator = rbinom(4601, size = 1, prob = 0.5)
+table(trainIndicator)
+trainSpam = spam[trainIndicator ==1,]
+testSpam = spam[trainIndicator == 0,]
+```
+
+
+So we want to look at sammries ad create exploratory plots and analyses
+
+```{r}
+names(trainSpam)
+head(trainSpam)
+table(trainSpam$type)
+```
+
+```{r}
+plot(trainSpam$capitalAve ~ trainSpam$type) # or let's take the log since the data is already
+#really skewed.
+plot(log10(trainSpam$capitalAve) ~ trainSpam$type) # We can add 1 in exploratory data analysis since al ot of numbers are 0
+# So we ca see that there's a lot more capitals in actual spam than non-spam.
+plot(log10(trainSpam[, 1:4] + 1)) #relationship between other features
+hCluster = hclust(dist(t(trainSpam[, 1:57])))
+plot(hCluster) # very sensitive to skewness in distribution of individual variables
+#let's do log then to reduce skewness.
+hClusterUpdated = hclust(dist(t(log10(trainSpam[,1:55] + 1))))
+plot(hClusterUpdated) # now we can see some more interesting clusters.
+```
+
+## Statistical prediction/modeling
+
+Should be informed by results of exploratory analysis. Should report measures of uncertainty.
+
+Used a trick to find what the best model. Should look in the code later.
+```{r}
+trainSpam$numType = as.numeric(trainSpam$type) - 1
+predictorModel = glm(numType ~ charDollar, family = "binomial", data = trainSpam)
+predictionTest = predict(predictorModel, testSpam)
+predictedSpam = rep("nonspam", dim(testSpam)[1])
+
+predictedSpam[predictorModel$fitted > 0.5] = "spam"
+
+table(predictedSpam, testSpam$type)
+
+## Error rate
+(61 + 458)/(1346 + 458 + 61 + 449)
+```
+
+## Interpret results
+
+Use appropriate language: "prediction, describes, correlates, leads to / causes, give explanations"
+
+Then we gotta challenge our own results. Think of potential alternative analyses. Challenge meaasures of uncertainty, and other choices.
+
+## Synthesize/write-up results
+
+Lead with the question.
+
+Summarize analyses into the story. Don't include every analysis unless it's really important.
+
